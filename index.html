@@ -1,1 +1,96 @@
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ULTRA AI WINGO PRO</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d19;color:white;font-family:Arial;text-align:center;padding:18px}
+h1{color:#00e5ff;text-shadow:0 0 15px #00bfff}
+.card{background:#17233b;padding:20px;border-radius:16px;margin:16px auto;max-width:430px;box-shadow:0 0 15px #152d4d}
+input,select,button{width:100%;padding:14px;margin:8px 0;border:0;border-radius:9px;font-size:16px}
+input,select{background:#263653;color:white}
+button{background:#00d9e8;color:#061321;font-weight:bold}
+.result{font-size:32px;color:#44ff9c;font-weight:bold;margin:20px}
+.timer{font-size:28px;color:#ffcf40}
+small{color:#bbb}
+</style>
+</head>
+<body>
+<h1>ULTRA AI WINGO</h1>
+<div class="card" id="login">
+<h2>LOGIN ACCOUNT</h2>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">LOGIN</button>
+<small>Demo Username: admin<br>Password: 12345</small>
+</div>
+<div id="app" style="display:none">
+<div class="card">
+<h2>AI PREDICTOR PRO</h2>
+<select id="mode" onchange="resetTimer()">
+<option value="30">WINGO 30 SECOND</option>
+<option value="60">WINGO 1 MINUTE</option>
+</select>
+<div class="timer" id="timer">00:30</div>
+<input id="history" placeholder="Old results: 2,4,7,9">
+<button onclick="analyze()">ANALYZE RESULTS</button>
+<div class="result" id="result">WAITING...</div>
+<p id="confidence"></p>
+<small>यह केवल डेटा-आधारित अनुमान है, जीत की गारंटी नहीं।</small>
+</div>
+<div class="card">
+<h3>RESULT HISTORY</h3>
+<input id="newResult" type="number" min="0" max="9" placeholder="Actual result (0-9)">
+<button onclick="saveResult()">SAVE RESULT</button>
+<div id="saved">No results saved</div>
+</div>
+</div>
+<script>
+function login(){
+if(document.getElementById('user').value==='admin' &&
+document.getElementById('pass').value==='12345'){
+document.getElementById('login').style.display='none';
+document.getElementById('app').style.display='block';
+}else alert('Wrong username or password');
+}
+let seconds=30;
+function resetTimer(){
+seconds=Number(document.getElementById('mode').value);
+showTimer();
+}
+function showTimer(){
+document.getElementById('timer').innerText='00:'+String(seconds).padStart(2,'0');
+}
+setInterval(()=>{
+if(document.getElementById('app').style.display==='block'){
+seconds--;
+if(seconds<=0)seconds=Number(document.getElementById('mode').value);
+showTimer();
+}
+},1000);
+function analyze(){
+let values=document.getElementById('history').value.split(',')
+.map(x=>Number(x.trim())).filter(x=>Number.isInteger(x)&&x>=0&&x<=9);
+if(values.length<3){alert('Kam se kam 3 purane results daalein');return;}
+let big=values.filter(x=>x>=5).length;
+let small=values.length-big;
+let choice=big>=small?'BIG':'SMALL';
+document.getElementById('result').innerText=choice;
+document.getElementById('confidence').innerText=
+'History: '+values.length+' results | BIG: '+big+' | SMALL: '+small;
+}
+let saved=[];
+function saveResult(){
+let v=document.getElementById('newResult').value;
+if(v===''||Number(v)<0||Number(v)>9){alert('0 se 9 tak number daalein');return;}
+saved.unshift(v);
+document.getElementById('saved').innerText=saved.join(' | ');
+document.getElementById('newResult').value='';
+}
+</script>
+</body>
+</html>
+
